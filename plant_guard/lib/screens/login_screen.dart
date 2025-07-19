@@ -56,6 +56,23 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<String?> refreshAccessToken() async {
+    final refresh = await _storage.read(key: 'refresh');
+    if (refresh == null) return null;
+    final url = Uri.parse('$baseUrl/api/account/token/refresh/');
+    final response = await http.post(
+      url,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'refresh': refresh}),
+    );
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      await _storage.write(key: 'access', value: data['access']);
+      return data['access'];
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
