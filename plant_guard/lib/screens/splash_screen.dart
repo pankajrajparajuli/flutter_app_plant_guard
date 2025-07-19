@@ -1,16 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // TODO: Add auth check and navigation logic
-    Future.delayed(const Duration(seconds: 1), () {
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  final _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuth();
+  }
+
+  Future<void> _checkAuth() async {
+    final access = await _storage.read(key: 'access');
+    await Future.delayed(const Duration(milliseconds: 500)); // for smooth UX
+    if (!mounted) return;
+    if (access != null && access.isNotEmpty) {
+      Navigator.pushReplacementNamed(context, '/home');
+    } else {
       Navigator.pushReplacementNamed(context, '/login');
-    });
-    return const Scaffold(
-      body: Center(child: Text('Plant Guard', style: TextStyle(fontSize: 32))),
-    );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
