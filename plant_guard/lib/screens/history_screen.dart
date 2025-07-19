@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import '../api_constants.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -27,7 +28,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
       _isLoading = true;
       _error = null;
     });
-    final url = Uri.parse('http://127.0.0.1:8000/api/detection/history/');
+    final url = Uri.parse('$baseUrl/api/detection/history/');
     final access = await _storage.read(key: 'access');
     try {
       final response = await http.get(
@@ -55,9 +56,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> _deleteRecord(int id) async {
-    final url = Uri.parse(
-      'http://127.0.0.1:8000/api/detection/history/$id/delete/',
-    );
+    final url = Uri.parse('$baseUrl/api/detection/history/$id/delete/');
     final access = await _storage.read(key: 'access');
     try {
       final response = await http.delete(

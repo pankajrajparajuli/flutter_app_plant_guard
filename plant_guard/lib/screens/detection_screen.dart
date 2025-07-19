@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import '../api_constants.dart';
 
 class DetectionScreen extends StatefulWidget {
   const DetectionScreen({super.key});
@@ -20,8 +21,8 @@ class _DetectionScreenState extends State<DetectionScreen> {
   final _picker = ImagePicker();
   final _storage = const FlutterSecureStorage();
 
-  Future<void> _pickImage() async {
-    final picked = await _picker.pickImage(source: ImageSource.gallery);
+  Future<void> _pickImage(ImageSource source) async {
+    final picked = await _picker.pickImage(source: source);
     if (picked != null) {
       setState(() {
         _image = File(picked.path);
@@ -31,6 +32,34 @@ class _DetectionScreenState extends State<DetectionScreen> {
     }
   }
 
+  void _showPickOptions() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: const Text('Take Photo'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.camera);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Pick from Gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _predict() async {
     if (_image == null) return;
     setState(() {
@@ -38,7 +67,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
       _error = null;
       _result = null;
     });
-    final url = Uri.parse('http://127.0.0.1:8000/api/detection/predict/');
+    final url = Uri.parse('$baseUrl/api/detection/predict/');
     final access = await _storage.read(key: 'access');
     try {
       final request = http.MultipartRequest('POST', url);
@@ -86,7 +115,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
-                  onPressed: _pickImage,
+                  onPressed: _showPickOptions,
                   icon: const Icon(Icons.photo),
                   label: const Text('Pick Image'),
                 ),

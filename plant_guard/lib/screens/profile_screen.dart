@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import '../api_constants.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -32,7 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _error = null;
       _success = null;
     });
-    final url = Uri.parse('http://127.0.0.1:8000/api/account/profile/');
+    final url = Uri.parse('$baseUrl/api/account/profile/');
     final access = await _storage.read(key: 'access');
     try {
       final response = await http.get(
@@ -65,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       _error = null;
       _success = null;
     });
-    final url = Uri.parse('http://127.0.0.1:8000/api/account/profile/');
+    final url = Uri.parse('$baseUrl/api/account/profile/');
     final access = await _storage.read(key: 'access');
     try {
       final response = await http.put(

@@ -13,7 +13,7 @@ class HomeScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.account_circle),
             onPressed: () {
-              // TODO: Navigate to profile
+              Navigator.pushNamed(context, '/profile');
             },
           ),
         ],
@@ -70,7 +70,7 @@ class HomeScreen extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.camera_alt, color: Colors.green),
                       onPressed: () {
-                        // TODO: Navigate to detection screen
+                        Navigator.pushNamed(context, '/detect');
                       },
                     ),
                   ],
@@ -84,21 +84,21 @@ class HomeScreen extends StatelessWidget {
                     icon: Icons.camera,
                     label: 'Scan Plant',
                     onTap: () {
-                      // TODO: Navigate to detection screen
+                      Navigator.pushNamed(context, '/detect');
                     },
                   ),
                   _HomeActionButton(
                     icon: Icons.history,
                     label: 'History',
                     onTap: () {
-                      // TODO: Navigate to history screen
+                      Navigator.pushNamed(context, '/history');
                     },
                   ),
                   _HomeActionButton(
                     icon: Icons.account_circle,
                     label: 'Profile',
                     onTap: () {
-                      // TODO: Navigate to profile screen
+                      Navigator.pushNamed(context, '/profile');
                     },
                   ),
                 ],
