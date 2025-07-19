@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
       _error = null;
     });
-    final url = Uri.parse('baseUrl/api/account/login/');
+    final url = Uri.parse('$baseUrl/api/account/login/');
     try {
       final response = await http.post(
         url,

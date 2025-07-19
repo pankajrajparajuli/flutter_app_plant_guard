@@ -26,7 +26,7 @@ class _SignupScreenState extends State<SignupScreen> {
       _isLoading = true;
       _error = null;
     });
-    final url = Uri.parse('baseUrl/api/account/register/');
+    final url = Uri.parse('$baseUrl/api/account/register/');
     try {
       final response = await http.post(
         url,
@@ -60,7 +60,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   Future<void> _loginAfterSignup() async {
-    final url = Uri.parse('baseUrl/api/account/login/');
+    final url = Uri.parse('$baseUrl/api/account/login/');
     try {
       final response = await http.post(
         url,
