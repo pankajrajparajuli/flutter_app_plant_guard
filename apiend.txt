@@ -1,0 +1,281 @@
+PlantGuard API Endpoints Documentation
+July 19, 2025
+Generated for the PlantGuard Django Project
+Contents
+1 Introduction. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2 Account App Endpoints. . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.1 Register . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 3
+2.2 Login (Token Obtain) . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.3 Token Refresh . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 4
+2.4 Update User Profile . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 5
+3 Detection App Endpoints. . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3.1 Predict Plant Disease . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 6
+3.2 List Prediction History . . . . . . . . . . . . . . . . . . . . . . . . . . . . 7
+3.3 Retrieve Prediction History Detail . . . . . . . . . . . . . . . . . . . . . . 7
+3.4 Delete Prediction History Record . . . . . . . . . . . . . . . . . . . . . . 8
+3.5 Clear Prediction History . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+4 Notes. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 9
+2
+1 Introduction
+This document provides detailed documentation for the API endpoints of the PlantGuard
+Django project. The project uses Django REST Framework (DRF) with JWT authen-
+tication for user management and a plant disease detection system. All endpoints are
+prefixed with /api/. The account app handles user authentication and profile manage-
+ment, while the detection app manages plant disease prediction and history.
+Base URL: http://127.0.0.1:8000/api/
+Authentication: Most endpoints (except registration and prediction) require JWT au-
+thentication. Obtain a JWT token via /api/account/login/ and include it in the
+Authorization header as Bearer <access_token>.
+2 Account App Endpoints
+2.1 Register
+URL /api/account/register/
+Method POST
+Description Creates a new user account.
+Permissions AllowAny (no authentication required).
+Request Body
+{
+" username ": " string " ,
+" email ": " string ( optional ) " ,
+" password ": " string " ,
+" f ir st _n am e ": " string ( optional ) " ,
+" last_name ": " string ( optional ) "
+}
+Response• Success (201 Created):
+{
+" username ": " string " ,
+" email ": " string " ,
+" f ir st _n am e ": " string " ,
+" last_name ": " string "
+}
+• Error (400 Bad Request):
+{
+" username ": [" A user with that username already
+exists ."] ,
+" email ": [" This field must be unique ."]
+}
+curl -X POST http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / account / register / \
+-H " Content - Type : a p p l i c a t i o n / json " \
+3
+-d ’{
+" username ": " john_doe " ,
+" email ": " j o h n @ e x a m p l e . com " ,
+" password ": " s e c u r e p a s s w o r d 1 2 3 " ,
+" fir st _n am e ": " John " ,
+" last_name ": " Doe "
+} ’
+2.2 Login (Token Obtain)
+Example URL /api/account/login/
+Method POST
+Description Authenticates a user and returns JWT access and refresh tokens.
+Permissions AllowAny (no authentication required).
+Request Body
+{
+" username ": " string " ,
+" password ": " string "
+}
+Response• Success (200 OK):
+{
+" refresh ": " string ( refresh token ) " ,
+" access ": " string ( access token ) "
+}
+• Error (401 Unauthorized):
+{
+" detail ": " No active account found with the given
+c r e d e n t i a l s "
+}
+curl -X POST http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / account / login / \
+-H " Content - Type : a p p l i c a t i o n / json " \
+-d ’{
+" username ": " john_doe " ,
+" password ": " s e c u r e p a s s w o r d 1 2 3 "
+} ’
+2.3 Token Refresh
+Example URL /api/account/refresh/
+Method POST
+Description Refreshes an expired access token using a valid refresh token.
+4
+Permissions AllowAny (no authentication required).
+Request Body
+{
+" refresh ": " string ( refresh token ) "
+}
+Response• Success (200 OK):
+{
+" access ": " string ( new access token ) "
+}
+• Error (401 Unauthorized):
+{
+" detail ": " Token is invalid or expired " ,
+" code ": " t o k e n _ n o t _ v a l i d "
+}
+curl -X POST http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / account / refresh / \
+-H " Content - Type : a p p l i c a t i o n / json " \
+-d ’{
+" refresh ": " e y J 0 e X A i O i J K V 1 Q i L C J h b G c i O i J I U z I 1 N i J 9 ..."
+} ’
+2.4 Update User Profile
+Example URL /api/account/profile/
+Method PUT
+Description Updates the authenticated user’s profile (first name, last name, and/or
+password).
+Permissions IsAuthenticated (requires valid JWT token).
+Request Body
+{
+" f ir st _n am e ": " string ( optional ) " ,
+" last_name ": " string ( optional ) " ,
+" o l d _ p a s s w o r d ": " string ( required if updating password ) " ,
+" n e w _ p a s s w o r d ": " string ( required if updating password ) "
+}
+Response• Success (200 OK):
+{
+" message ": " Profile updated s u c c e s s f u l l y ."
+}
+• Error (400 Bad Request):
+5
+{
+" error ": " Old password is incorrect ."
+}
+curl -X PUT http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / account / profile / \
+-H " A u t h o r i z a t i o n : Bearer < access_token > " \
+-H " Content - Type : a p p l i c a t i o n / json " \
+-d ’{
+" fir st _n am e ": " Jane " ,
+" last_name ": " Doe " ,
+" o l d _ p a s s w o r d ": " s e c u r e p a s s w o r d 1 2 3 " ,
+" n e w _ p a s s w o r d ": " n e w p a s s w o r d 4 5 6 "
+} ’
+3 Detection App Endpoints
+3.1 Predict Plant Disease
+Example URL /api/detection/predict/
+Method POST
+Description Uploads an image of a plant leaf to predict the disease, confidence score,
+and suggested remedy. Saves prediction history for authenticated users.
+Permissions AllowAny (no authentication required, but history saved only for authen-
+ticated users).
+Request Body (multipart/form-data):
+• image: Image file (e.g., JPEG, PNG)
+Response• Success (200 OK):
+{
+" disease ": " string ( e . g . , T o m a t o _ _ _ h e a l t h y ) " ,
+" c on fi de nc e ": float ( e . g . , 0.9876) ,
+" remedy ": " string ( e . g . , No disease detected .) "
+}
+• Error (400 Bad Request):
+{
+" error ": " No leaf or disease found . Please provide a
+leaf image ."
+}
+• Error (500 Internal Server Error):
+{
+" error ": " string ( exception message ) "
+}
+6
+curl -X POST http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / detection / predict / \
+-H " A u t h o r i z a t i o n : Bearer < access_token > ( optional ) " \
+-F " image = @ / path / to / leaf . jpg "
+3.2 List Prediction History
+Example URL /api/detection/history/
+Method GET
+Description Retrieves the authenticated user’s prediction history.
+Permissions IsAuthenticated (requires valid JWT token).
+Request Body None
+Response• Success (200 OK):
+[
+{
+" id ": int ,
+" user ": int ( user ID ) ,
+" image ": " string ( URL to image ) " ,
+" disease ": " string " ,
+" c on fi de nc e ": float ,
+" remedy ": " string " ,
+" timestamp ": " string ( ISO 8601 format ) "
+} ,
+...
+]
+• Error (401 Unauthorized):
+{
+" detail ": " A u t h e n t i c a t i o n c r e d e n t i a l s were not
+provided ."
+}
+curl -X GET http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / detection / history / \
+-H " A u t h o r i z a t i o n : Bearer < access_token > "
+3.3 Retrieve Prediction History Detail
+Example URL /api/detection/history/<int:id>/
+Method GET
+Description Retrieves details of a specific prediction record for the authenticated user.
+Permissions IsAuthenticated (requires valid JWT token).
+Request Body None
+7
+Response• Success (200 OK):
+{
+" id ": int ,
+" user ": int ( user ID ) ,
+" image ": " string ( URL to image ) " ,
+" disease ": " string " ,
+" c on fi de nc e ": float ,
+" remedy ": " string " ,
+" timestamp ": " string ( ISO 8601 format ) "
+}
+• Error (404 Not Found):
+{
+" detail ": " Not found ."
+}
+• Error (401 Unauthorized):
+{
+" detail ": " A u t h e n t i c a t i o n c r e d e n t i a l s were not
+provided ."
+}
+curl -X GET http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / detection / history /1/ \
+-H " A u t h o r i z a t i o n : Bearer < access_token > "
+3.4 Delete Prediction History Record
+Example URL /api/detection/history/<int:id>/delete/
+Method DELETE
+Description Deletes a specific prediction record for the authenticated user.
+Permissions IsAuthenticated (requires valid JWT token).
+Request Body None
+Response• Success (204 No Content): No body returned.
+• Error (404 Not Found):
+{
+" detail ": " Not found ."
+}
+• Error (401 Unauthorized):
+{
+" detail ": " A u t h e n t i c a t i o n c r e d e n t i a l s were not
+provided ."
+}
+8
+curl -X DELETE http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / detection / history /1/
+delete / \
+-H " A u t h o r i z a t i o n : Bearer < access_token > "
+3.5 Clear Prediction History
+Example URL /api/detection/history/clear/
+Method DELETE
+Description Deletes all prediction history records for the authenticated user.
+Permissions IsAuthenticated (requires valid JWT token).
+Request Body None
+Response• Success (204 No Content):
+{
+" message ": " X records deleted ."
+}
+• Error (401 Unauthorized):
+{
+" detail ": " A u t h e n t i c a t i o n c r e d e n t i a l s were not
+provided ."
+}
+curl -X DELETE http : / / 1 2 7 . 0 . 0 . 1 : 8 0 0 0 / api / detection / history /
+clear / \
+-H " A u t h o r i z a t i o n : Bearer < access_token > "
+4 Notes
+Example• Browsable API: Django REST Framework provides a browsable API inter-
+face at each endpoint (e.g., http://127.0.0.1:8000/api/detection/predict/).
+Access it via a web browser to test endpoints interactively.
+• Media Files: Image uploads for the /predict/ endpoint are stored in the media/predicted_imag
+directory, accessible via /media/predicted_images/<filename>.
+• JWT Configuration: Access tokens expire after 5 minutes, and refresh tokens
+expire after 1 day, as configured in settings.py.
+• Error Handling: Ensure proper error handling for invalid image formats or miss-
+ing fields in requests.
+• Model Loading: The plant disease prediction model (plant_disease_prediction_model.h5)
+must be present in the cnn_model directory relative to the project root.
+
+ghgh
