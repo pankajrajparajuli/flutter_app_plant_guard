@@ -10,11 +10,17 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Plant Guard'),
         backgroundColor: Colors.green[700],
         actions: [
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.pushNamed(context, '/profile');
-            },
+          Padding(
+            padding: const EdgeInsets.only(right: 16.0),
+            child: CircleAvatar(
+              backgroundColor: Colors.green,
+              child: IconButton(
+                icon: const Icon(Icons.eco, color: Colors.white),
+                onPressed: () {
+                  // You can add a menu or logo action here
+                },
+              ),
+            ),
           ),
         ],
       ),
@@ -22,85 +28,89 @@ class HomeScreen extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircleAvatar(
-                    radius: 32,
-                    backgroundImage: NetworkImage(
-                      'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=200&q=80',
-                    ),
+                  const Text(
+                    'Plant Doctor',
+                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(width: 16),
-                  const Expanded(
-                    child: Text(
-                      'Welcome back!\nLet\'s keep your plants healthy.',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  const SizedBox(width: 8),
+                  Tooltip(
+                    message: 'Get help identifying and curing plant diseases.',
+                    child: Icon(Icons.info_outline, color: Colors.green[700]),
                   ),
                 ],
               ),
-              const SizedBox(height: 24),
-              Container(
+              const SizedBox(height: 12),
+              const Text(
+                'A healthy plant brings joy. We help you identify and cure plant diseases.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.black87),
+              ),
+              const SizedBox(height: 28),
+              SizedBox(
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.green[50],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                padding: const EdgeInsets.all(16),
-                child: Row(
-                  children: [
-                    Image.network(
-                      'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=80&q=80',
-                      width: 60,
-                      height: 60,
-                      fit: BoxFit.cover,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Text(
-                        'Scan your plant\'s leaf to detect diseases instantly!',
-                        style: TextStyle(fontSize: 16),
+                  ),
+                  icon: const Icon(Icons.camera_alt, color: Colors.white),
+                  label: const Text(
+                    'Scan Plant',
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/detect');
+                  },
+                ),
+              ),
+              const SizedBox(height: 28),
+              // Instructions Section
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'How to Scan a Plant?',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.camera_alt, color: Colors.green),
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/detect');
-                      },
+                    SizedBox(height: 10),
+                    Text(
+                      '1. Take a photo of the entire plant.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '2. Crop the image to zoom in on the diseased or problematic area.',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      '3. Get results in seconds.',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 28),
+              // Quick Tips Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _HomeActionButton(
-                    icon: Icons.camera,
-                    label: 'Scan Plant',
-                    onTap: () {
-                      Navigator.pushNamed(context, '/detect');
-                    },
-                  ),
-                  _HomeActionButton(
-                    icon: Icons.history,
-                    label: 'History',
-                    onTap: () {
-                      Navigator.pushNamed(context, '/history');
-                    },
-                  ),
-                  _HomeActionButton(
-                    icon: Icons.account_circle,
-                    label: 'Profile',
-                    onTap: () {
-                      Navigator.pushNamed(context, '/profile');
-                    },
-                  ),
+                children: const [
+                  _CareTipTile(icon: Icons.opacity, label: 'Watering'),
+                  _CareTipTile(icon: Icons.wb_sunny, label: 'Lighting'),
+                  _CareTipTile(icon: Icons.grain, label: 'Humid'),
                 ],
               ),
               const SizedBox(height: 32),
@@ -136,39 +146,61 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
-      backgroundColor: Colors.green[100],
+      backgroundColor: Colors.white,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        selectedItemColor: Colors.green[700],
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          if (index == 0) {
+            // Already on home
+          } else if (index == 1) {
+            Navigator.pushNamed(context, '/history');
+          } else if (index == 2) {
+            Navigator.pushNamed(context, '/profile');
+          }
+        },
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _HomeActionButton extends StatelessWidget {
+class _CareTipTile extends StatelessWidget {
   final IconData icon;
   final String label;
-  final VoidCallback onTap;
-  const _HomeActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+  const _CareTipTile({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Ink(
-          decoration: const ShapeDecoration(
-            color: Colors.green,
-            shape: CircleBorder(),
+    return Container(
+      width: 90,
+      height: 90,
+      decoration: BoxDecoration(
+        color: Colors.green[50],
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 36, color: Colors.green[700]),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
           ),
-          child: IconButton(
-            icon: Icon(icon, color: Colors.white),
-            onPressed: onTap,
-            iconSize: 32,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(label, style: const TextStyle(fontSize: 14)),
-      ],
+        ],
+      ),
     );
   }
 }
