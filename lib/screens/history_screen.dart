@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:plant_guard/screens/preventive_tips_screen.dart';
 import 'package:plant_guard/screens/solutions_screen.dart';
 import 'package:plant_guard/services/api_service.dart';
+import 'package:intl/intl.dart';
+import 'prediction_details_screen.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -120,6 +122,16 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
+  String _formatTimestamp(String? timestamp) {
+    if (timestamp == null) return '';
+    try {
+      final dt = DateTime.parse(timestamp);
+      return DateFormat('d MMM yyyy hh:mm a').format(dt);
+    } catch (_) {
+      return timestamp;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,33 +177,20 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               )
                               : const Icon(Icons.image_not_supported, size: 50),
                       title: Text(item['disease'] ?? 'Unknown Disease'),
-                      subtitle: Text(item['timestamp']?.toString() ?? ''),
+                      subtitle: Text(
+                        _formatTimestamp(item['timestamp']?.toString()),
+                      ),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder:
-                                (context) => PreventiveTipsScreen(
+                                (context) => PredictionDetailsScreen(
                                   predictionId: item['id'].toString(),
                                 ),
                           ),
                         );
                       },
-                      trailing: IconButton(
-                        icon: const Icon(Icons.arrow_forward),
-                        tooltip: 'View Solutions',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => SolutionsScreen(
-                                    predictionId: item['id'].toString(),
-                                  ),
-                            ),
-                          );
-                        },
-                      ),
                     ),
                   );
                 },

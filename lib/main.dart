@@ -8,6 +8,7 @@ import 'package:plant_guard/screens/register_screen.dart';
 import 'package:plant_guard/screens/scan_screen.dart';
 import 'package:plant_guard/screens/settings_screen.dart';
 import 'package:plant_guard/screens/history_screen.dart';
+import 'package:plant_guard/screens/prediction_details_screen.dart';
 
 void main() {
   runApp(PlantGuardApp());
@@ -30,6 +31,10 @@ class PlantGuardApp extends StatelessWidget {
         '/scan': (context) => ScanScreen(),
         '/diagnosis': (context) => DiagnosisScreen(),
         '/history': (context) => HistoryScreen(),
+        '/prediction_details':
+            (context) => const PredictionDetailsScreen(
+              predictionId: '',
+            ), // Use MaterialPageRoute for id
       },
     );
   }

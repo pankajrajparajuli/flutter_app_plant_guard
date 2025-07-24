@@ -72,81 +72,73 @@ class _MenuScreenState extends State<MenuScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        // Navigate to home on back button press
-        Navigator.pushReplacementNamed(context, '/home');
-        return false; // Prevent default back navigation
-      },
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Menu')),
-        body:
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : errorMessage != null
-                ? Center(child: Text(errorMessage!))
-                : ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    ListTile(
-                      leading: const CircleAvatar(child: Icon(Icons.person)),
-                      title: Text(fullName.isEmpty ? 'Unknown User' : fullName),
-                      subtitle: Text(
-                        username.isEmpty ? '@Unknown' : '@$username',
-                      ),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/edit_profile');
-                      },
+    return Scaffold(
+      appBar: AppBar(title: const Text('Menu')),
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : errorMessage != null
+              ? Center(child: Text(errorMessage!))
+              : ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  ListTile(
+                    leading: const CircleAvatar(child: Icon(Icons.person)),
+                    title: Text(fullName.isEmpty ? 'Unknown User' : fullName),
+                    subtitle: Text(
+                      username.isEmpty ? '@Unknown' : '@$username',
                     ),
-                    const Divider(),
-                    ListTile(
-                      leading: const Icon(Icons.history),
-                      title: const Text('History'),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/history');
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.info),
-                      title: const Text('About Us'),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/about_us');
-                      },
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.logout),
-                      title: const Text('Log Out'),
-                      onTap: () async {
-                        final confirmed = await showDialog<bool>(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text('Confirm Logout'),
-                                content: const Text(
-                                  'Are you sure you want to log out?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, false),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.pop(context, true),
-                                    child: const Text('Logout'),
-                                  ),
-                                ],
+                    onTap: () {
+                      Navigator.pushNamed(context, '/edit_profile');
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.history),
+                    title: const Text('History'),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/history');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.info),
+                    title: const Text('About Us'),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/about_us');
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.logout),
+                    title: const Text('Log Out'),
+                    onTap: () async {
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text('Confirm Logout'),
+                              content: const Text(
+                                'Are you sure you want to log out?',
                               ),
-                        );
-                        if (confirmed == true) {
-                          await logout();
-                        }
-                      },
-                    ),
-                  ],
-                ),
-      ),
+                              actions: [
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.pop(context, false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  child: const Text('Logout'),
+                                ),
+                              ],
+                            ),
+                      );
+                      if (confirmed == true) {
+                        await logout();
+                      }
+                    },
+                  ),
+                ],
+              ),
     );
   }
 }
