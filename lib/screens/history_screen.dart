@@ -11,6 +11,7 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   List<dynamic> historyData = [];
   bool isLoading = true;
+  String? errorMessage;
 
   @override
   void initState() {
@@ -19,6 +20,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
   }
 
   Future<void> fetchHistory() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = null;
+    });
     try {
       final data = await ApiService().getHistory();
       setState(() {
@@ -28,7 +33,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
     } catch (e) {
       setState(() {
         isLoading = false;
+        errorMessage = 'Failed to load history: $e';
       });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMessage!)));
+    }
+  }
+
+  Future<void> clearHistory() async {
+    try {
+      await ApiService().clearHistory();
+      fetchHistory();
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to clear history: $e')));
     }
   }
 
@@ -36,63 +56,97 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text('History'),
+        leading: BackButton(),
+        title: const Text('History'),
         actions: [
           IconButton(
-            icon: Icon(Icons.delete),
+            icon: const Icon(Icons.delete),
+            tooltip: 'Clear History',
             onPressed: () async {
-              await ApiService().clearHistory();
-              fetchHistory();
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder:
+                    (context) => AlertDialog(
+                      title: const Text('Clear History'),
+                      content: const Text(
+                        'Are you sure you want to clear all history?',
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text('Clear'),
+                        ),
+                      ],
+                    ),
+              );
+              if (confirmed == true) {
+                clearHistory();
+              }
             },
           ),
         ],
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
-                    itemCount: historyData.length,
-                    itemBuilder: (context, index) {
-                      final item = historyData[index];
-                      return ListTile(
-                        leading: Image.network(item['image_url'] ?? '', width: 50, height: 50),
-                        title: Text(item['disease_name'] ?? 'Unknown'),
-                        subtitle: Text(item['date'] ?? ''),
-                        onTap: () {
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : errorMessage != null
+              ? Center(child: Text(errorMessage!))
+              : historyData.isEmpty
+              ? const Center(child: Text('No history found.'))
+              : ListView.builder(
+                padding: const EdgeInsets.all(16.0),
+                itemCount: historyData.length,
+                itemBuilder: (context, index) {
+                  final item = historyData[index];
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      leading:
+                          item['image_url'] != null &&
+                                  item['image_url'].isNotEmpty
+                              ? Image.network(
+                                item['image_url'],
+                                width: 50,
+                                height: 50,
+                                fit: BoxFit.cover,
+                              )
+                              : const Icon(Icons.image_not_supported, size: 50),
+                      title: Text(item['disease_name'] ?? 'Unknown Disease'),
+                      subtitle: Text(item['date'] ?? ''),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => PreventiveTipsScreen(
+                                  predictionId: item['id'].toString(),
+                                ),
+                          ),
+                        );
+                      },
+                      trailing: IconButton(
+                        icon: const Icon(Icons.arrow_forward),
+                        tooltip: 'View Solutions',
+                        onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PreventiveTipsScreen(predictionId: item['id'].toString()),
+                              builder:
+                                  (context) => SolutionsScreen(
+                                    predictionId: item['id'].toString(),
+                                  ),
                             ),
                           );
                         },
-                        trailing: IconButton(
-                          icon: Icon(Icons.arrow_forward),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SolutionsScreen(predictionId: item['id'].toString()),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
     );
   }
 }

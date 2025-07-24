@@ -27,7 +27,7 @@ class PlantGuardApp extends StatelessWidget {
         '/menu': (context) => MenuScreen(),
         '/settings': (context) => SettingsScreen(),
         '/scan': (context) => ScanScreen(),
-        '/diagnosis': (context) => DiagnosisScreen(), 
+        '/diagnosis': (context) => DiagnosisScreen(),
       },
     );
   }

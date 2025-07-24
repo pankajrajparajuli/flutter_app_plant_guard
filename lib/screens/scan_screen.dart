@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:plant_guard/services/api_service.dart';
 
 class ScanScreen extends StatefulWidget {
   @override
@@ -8,35 +9,69 @@ class ScanScreen extends StatefulWidget {
 
 class _ScanScreenState extends State<ScanScreen> {
   final ImagePicker _picker = ImagePicker();
+  bool _isLoading = false;
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _pickAndPredict(ImageSource source) async {
     final XFile? image = await _picker.pickImage(source: source);
-    if (image != null) {
-      Navigator.pushNamed(context, '/diagnosis', arguments: image.path);
+    if (image == null) return; // User cancelled
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final apiService = ApiService();
+      final predictionResult = await apiService.predictDisease(image.path);
+
+      // Navigate to diagnosis screen, passing the prediction result data
+      Navigator.pushNamed(
+        context,
+        '/diagnosis',
+        arguments: predictionResult,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Prediction failed: ${e.toString()}')),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Analyzing')),
+      appBar: AppBar(title: const Text('Scan Plant')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('Analyzing your plant\'s health. This may take a few seconds...'),
-            LinearProgressIndicator(value: 0.75),
-            Text('Process: 3/4'),
-            ElevatedButton(
-              onPressed: () => _pickImage(ImageSource.camera),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.camera_alt), Text('Take Photo')]),
-            ),
-            ElevatedButton(
-              onPressed: () => _pickImage(ImageSource.gallery),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [Icon(Icons.photo), Text('Choose from Gallery')]),
-            ),
-          ],
-        ),
+        child: _isLoading
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Analyzing your plant, please wait...'),
+                ],
+              )
+            : Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => _pickAndPredict(ImageSource.camera),
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('Take Photo'),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () => _pickAndPredict(ImageSource.gallery),
+                    icon: const Icon(Icons.photo),
+                    label: const Text('Choose from Gallery'),
+                  ),
+                ],
+              ),
       ),
     );
   }
