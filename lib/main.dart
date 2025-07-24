@@ -7,6 +7,7 @@ import 'package:plant_guard/screens/menu_screen.dart';
 import 'package:plant_guard/screens/register_screen.dart';
 import 'package:plant_guard/screens/scan_screen.dart';
 import 'package:plant_guard/screens/settings_screen.dart';
+import 'package:plant_guard/screens/history_screen.dart';
 
 void main() {
   runApp(PlantGuardApp());
@@ -28,6 +29,7 @@ class PlantGuardApp extends StatelessWidget {
         '/settings': (context) => SettingsScreen(),
         '/scan': (context) => ScanScreen(),
         '/diagnosis': (context) => DiagnosisScreen(),
+        '/history': (context) => HistoryScreen(),
       },
     );
   }

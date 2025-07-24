@@ -123,7 +123,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                     ),
                     const SizedBox(height: 24),
                     ExpansionTile(
-                      title: const Text('Remedies'),
+                      title: const Text('Remedies and Prevention'),
                       children: [
                         ListTile(
                           title: const Text('Organic Solutions'),

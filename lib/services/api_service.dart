@@ -117,13 +117,19 @@ class ApiService {
   }
 
   // CLEAR HISTORY
-  Future<bool> clearHistory() async {
+  Future<bool> clearHistory({required String password}) async {
     final token = await getToken();
     final response = await http.delete(
       Uri.parse('$apiBaseUrl/api/detection/history/clear/'),
-      headers: {'Authorization': 'Bearer $token'},
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({'password': password}),
     );
+
     if (response.statusCode == 204) return true;
+
     throw HttpException('Failed to clear history: ${response.body}');
   }
 

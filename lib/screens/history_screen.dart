@@ -28,17 +28,10 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
     try {
       final data = await ApiService().getHistory();
-      if (data == null || data.isEmpty) {
-        setState(() {
-          historyData = [];
-          isLoading = false;
-        });
-      } else {
-        setState(() {
-          historyData = data;
-          isLoading = false;
-        });
-      }
+      setState(() {
+        historyData = data ?? [];
+        isLoading = false;
+      });
     } catch (e) {
       setState(() {
         isLoading = false;
@@ -54,10 +47,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
     }
   }
 
-  Future<void> clearHistory() async {
+  Future<void> clearHistory({required String password}) async {
     try {
-      await ApiService().clearHistory();
-      await fetchHistory(); // Refresh the history after clearing
+      await ApiService().clearHistory(password: password);
+      await fetchHistory(); // Refresh after clearing
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('History cleared successfully')),
+      );
     } catch (e) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
@@ -66,6 +62,61 @@ class _HistoryScreenState extends State<HistoryScreen> {
           );
         }
       });
+    }
+  }
+
+  Future<void> _showPasswordDialog() async {
+    final passwordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Confirm Clear History'),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Please enter your password to confirm:'),
+                  const SizedBox(height: 10),
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Password is required';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.pop(context, true);
+                  }
+                },
+                child: const Text('Confirm'),
+              ),
+            ],
+          ),
+    );
+
+    if (confirmed == true) {
+      await clearHistory(password: passwordController.text);
     }
   }
 
@@ -79,31 +130,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
           IconButton(
             icon: const Icon(Icons.delete),
             tooltip: 'Clear History',
-            onPressed: () async {
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder:
-                    (context) => AlertDialog(
-                      title: const Text('Clear History'),
-                      content: const Text(
-                        'Are you sure you want to clear all history?',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Clear'),
-                        ),
-                      ],
-                    ),
-              );
-              if (confirmed == true) {
-                await clearHistory(); // Ensure async execution
-              }
-            },
+            onPressed: _showPasswordDialog,
           ),
         ],
       ),
@@ -115,7 +142,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               : historyData.isEmpty
               ? const Center(child: Text('No history found.'))
               : ListView.builder(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16),
                 itemCount: historyData.length,
                 itemBuilder: (context, index) {
                   final item = historyData[index];
