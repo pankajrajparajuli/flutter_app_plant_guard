@@ -1,1 +1,0 @@
-const String baseUrl = 'http://192.168.1.82:8000';              // backend api url halne esma

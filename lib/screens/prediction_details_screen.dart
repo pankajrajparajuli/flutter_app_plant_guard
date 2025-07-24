@@ -44,68 +44,39 @@ class _PredictionDetailsScreenState extends State<PredictionDetailsScreen> {
   }
 
   Future<void> _showDeleteDialog() async {
-    final passwordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
     final confirmed = await showDialog<bool>(
       context: context,
       builder:
           (context) => AlertDialog(
             title: const Text('Delete Prediction'),
-            content: Form(
-              key: formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Enter your password to confirm deletion:'),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Password is required';
-                      }
-                      return null;
-                    },
-                  ),
-                ],
-              ),
+            content: const Text(
+              'Are you sure you want to delete this prediction?',
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context, false),
-                child: const Text('Cancel'),
+                child: const Text('No'),
               ),
               ElevatedButton(
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    Navigator.pop(context, true);
-                  }
-                },
-                child: const Text('Delete'),
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Yes'),
               ),
             ],
           ),
     );
     if (confirmed == true) {
-      await _deletePrediction(passwordController.text);
+      await _deletePrediction();
     }
   }
 
-  Future<void> _deletePrediction(String password) async {
+  Future<void> _deletePrediction() async {
     setState(() {
       isLoading = true;
     });
     try {
-      // First, verify password by attempting to clear history with a dummy call (or implement a password check endpoint if available)
-      // Here, we assume deleteHistoryItem does not require password, but you can adapt as needed.
       await ApiService().deleteHistoryItem(widget.predictionId);
       if (mounted) {
-        Navigator.pop(context, true); // Return to history screen
+        Navigator.pop(context); // Go back to History
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Prediction deleted successfully')),
         );
@@ -206,7 +177,7 @@ class _PredictionDetailsScreenState extends State<PredictionDetailsScreen> {
                           body: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
-                              predictionData!['preventative_tips'] ??
+                              predictionData!['preventive_measures'] ??
                                   'No data available',
                               style: const TextStyle(fontSize: 16),
                             ),
@@ -222,8 +193,7 @@ class _PredictionDetailsScreenState extends State<PredictionDetailsScreen> {
                           body: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: Text(
-                              predictionData!['organic_solutions'] ??
-                                  'No data available',
+                              predictionData!['remedy'] ?? 'No data available',
                               style: const TextStyle(fontSize: 16),
                             ),
                           ),
