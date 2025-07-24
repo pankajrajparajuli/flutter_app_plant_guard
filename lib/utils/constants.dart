@@ -1,0 +1,1 @@
+const String baseUrl = 'YOUR_BACKEND_API_URL';              // backend api url halne esma
