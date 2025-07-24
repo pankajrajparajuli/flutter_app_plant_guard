@@ -4,6 +4,8 @@ import 'package:plant_guard/screens/solutions_screen.dart';
 import 'package:plant_guard/services/api_service.dart';
 
 class HistoryScreen extends StatefulWidget {
+  const HistoryScreen({super.key});
+
   @override
   _HistoryScreenState createState() => _HistoryScreenState();
 }
@@ -26,29 +28,44 @@ class _HistoryScreenState extends State<HistoryScreen> {
     });
     try {
       final data = await ApiService().getHistory();
-      setState(() {
-        historyData = data;
-        isLoading = false;
-      });
+      if (data == null || data.isEmpty) {
+        setState(() {
+          historyData = [];
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          historyData = data;
+          isLoading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         isLoading = false;
         errorMessage = 'Failed to load history: $e';
       });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(errorMessage!)));
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(errorMessage!)));
+        }
+      });
     }
   }
 
   Future<void> clearHistory() async {
     try {
       await ApiService().clearHistory();
-      fetchHistory();
+      await fetchHistory(); // Refresh the history after clearing
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Failed to clear history: $e')));
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to clear history: $e')),
+          );
+        }
+      });
     }
   }
 
@@ -56,7 +73,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: BackButton(),
+        leading: const BackButton(),
         title: const Text('History'),
         actions: [
           IconButton(
@@ -84,7 +101,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ),
               );
               if (confirmed == true) {
-                clearHistory();
+                await clearHistory(); // Ensure async execution
               }
             },
           ),
@@ -106,17 +123,22 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     margin: const EdgeInsets.only(bottom: 12),
                     child: ListTile(
                       leading:
-                          item['image_url'] != null &&
-                                  item['image_url'].isNotEmpty
+                          item['image'] != null &&
+                                  (item['image'] as String).isNotEmpty
                               ? Image.network(
-                                item['image_url'],
+                                item['image'],
                                 width: 50,
                                 height: 50,
                                 fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) => const Icon(
+                                      Icons.image_not_supported,
+                                      size: 50,
+                                    ),
                               )
                               : const Icon(Icons.image_not_supported, size: 50),
-                      title: Text(item['disease_name'] ?? 'Unknown Disease'),
-                      subtitle: Text(item['date'] ?? ''),
+                      title: Text(item['disease'] ?? 'Unknown Disease'),
+                      subtitle: Text(item['timestamp']?.toString() ?? ''),
                       onTap: () {
                         Navigator.push(
                           context,

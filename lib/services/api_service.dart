@@ -134,7 +134,7 @@ class ApiService {
       throw Exception('No access token found');
     }
     final response = await http.get(
-      Uri.parse('$apiBaseUrl/api/account/profile/'),
+      Uri.parse('$apiBaseUrl/api/account/user_detail/'),
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 200) {

@@ -4,7 +4,7 @@ import 'package:plant_guard/services/api_service.dart';
 class PreventiveTipsScreen extends StatefulWidget {
   final String predictionId;
 
-  PreventiveTipsScreen({required this.predictionId});
+  const PreventiveTipsScreen({super.key, required this.predictionId});
 
   @override
   _PreventiveTipsScreenState createState() => _PreventiveTipsScreenState();
