@@ -18,7 +18,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   String diagnosis = '';
   String confidence = '';
   String remedy = '';
-  String preventive_measures = '';
+  String preventive_measure = '';
   bool isLoading = true;
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -56,7 +56,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                     ? "${(data['confidence'] * 100).toStringAsFixed(2)}%"
                     : 'N/A';
             remedy = data['remedy'] ?? 'Not available';
-            preventive_measures = data['prevention'] ?? 'Not available';
+            preventive_measure = data['preventive_measure'] ?? 'Not available';
             isLoading = false;
           });
         }
@@ -66,7 +66,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
             diagnosis = 'Error: ${response.statusCode}';
             confidence = 'N/A';
             remedy = 'Not available';
-            preventive_measures = 'Not available';
+            preventive_measure = 'Not available';
             isLoading = false;
           });
         }
@@ -77,7 +77,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
           diagnosis = 'Failed to get diagnosis: $e';
           confidence = 'N/A';
           remedy = 'Not available';
-          preventive_measures = 'Not available';
+          preventive_measure = 'Not available';
           isLoading = false;
         });
       }
@@ -142,7 +142,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                         ),
                         ListTile(
                           title: const Text('Preventative Tips'),
-                          subtitle: Text(preventive_measures),
+                          subtitle: Text(preventive_measure),
                           onTap: () {
                             Navigator.push(
                               context,

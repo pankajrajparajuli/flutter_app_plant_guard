@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:plant_guard/screens/preventive_tips_screen.dart';
-import 'package:plant_guard/screens/solutions_screen.dart';
 import 'package:plant_guard/services/api_service.dart';
 import 'package:intl/intl.dart';
 import 'prediction_details_screen.dart';
