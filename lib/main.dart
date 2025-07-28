@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plant_guard/screens/diagnosis_screen.dart'; // Import the correct DiagnosisScreen
+import 'package:plant_guard/screens/diagnosis_screen.dart';
 import 'package:plant_guard/screens/edit_profile_screen.dart';
 import 'package:plant_guard/screens/home_screen.dart';
 import 'package:plant_guard/screens/login_screen.dart';
@@ -8,13 +8,15 @@ import 'package:plant_guard/screens/register_screen.dart';
 import 'package:plant_guard/screens/scan_screen.dart';
 import 'package:plant_guard/screens/settings_screen.dart';
 import 'package:plant_guard/screens/history_screen.dart';
-import 'package:plant_guard/screens/prediction_details_screen.dart';
+import 'package:plant_guard/screens/change_password_screen.dart';
 
 void main() {
-  runApp(PlantGuardApp());
+  runApp(const PlantGuardApp());
 }
 
 class PlantGuardApp extends StatelessWidget {
+  const PlantGuardApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -31,10 +33,7 @@ class PlantGuardApp extends StatelessWidget {
         '/scan': (context) => ScanScreen(),
         '/diagnosis': (context) => DiagnosisScreen(),
         '/history': (context) => HistoryScreen(),
-        '/prediction_details':
-            (context) => const PredictionDetailsScreen(
-              predictionId: '',
-            ), // Use MaterialPageRoute for id
+        '/change_password': (context) => ChangePasswordScreen(),
       },
     );
   }

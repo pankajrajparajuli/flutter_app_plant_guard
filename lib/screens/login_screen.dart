@@ -3,6 +3,8 @@ import 'package:plant_guard/screens/register_screen.dart';
 import 'package:plant_guard/services/api_service.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }

@@ -4,7 +4,7 @@ import 'package:plant_guard/services/api_service.dart';
 class SolutionsScreen extends StatefulWidget {
   final String predictionId;
 
-  SolutionsScreen({required this.predictionId});
+  const SolutionsScreen({super.key, required this.predictionId});
 
   @override
   _SolutionsScreenState createState() => _SolutionsScreenState();

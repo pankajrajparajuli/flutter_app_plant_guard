@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:plant_guard/config/api_config.dart';
 
 class EditProfileScreen extends StatefulWidget {
+  const EditProfileScreen({super.key});
+
   @override
   _EditProfileScreenState createState() => _EditProfileScreenState();
 }

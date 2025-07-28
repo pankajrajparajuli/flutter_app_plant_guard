@@ -76,7 +76,7 @@ class _PredictionDetailsScreenState extends State<PredictionDetailsScreen> {
     try {
       await ApiService().deleteHistoryItem(widget.predictionId);
       if (mounted) {
-        Navigator.pop(context); // Go back to History
+        Navigator.pop(context, true); // Go back to history
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Prediction deleted successfully')),
         );
@@ -171,8 +171,8 @@ class _PredictionDetailsScreenState extends State<PredictionDetailsScreen> {
                       children: [
                         ExpansionPanel(
                           headerBuilder:
-                              (context, isExpanded) => ListTile(
-                                title: const Text('Preventive Measures'),
+                              (context, isExpanded) => const ListTile(
+                                title: Text('Preventive Measures'),
                               ),
                           body: Padding(
                             padding: const EdgeInsets.all(16.0),
@@ -187,8 +187,8 @@ class _PredictionDetailsScreenState extends State<PredictionDetailsScreen> {
                         ),
                         ExpansionPanel(
                           headerBuilder:
-                              (context, isExpanded) => ListTile(
-                                title: const Text('Organic Solutions'),
+                              (context, isExpanded) => const ListTile(
+                                title: Text('Organic Solutions'),
                               ),
                           body: Padding(
                             padding: const EdgeInsets.all(16.0),
