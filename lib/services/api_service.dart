@@ -7,10 +7,14 @@ import '../config/api_config.dart';
 class ApiService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
+  // GET ACCESS TOKEN
   Future<String?> getToken() async => await _storage.read(key: 'access_token');
+
+  // GET REFRESH TOKEN
   Future<String?> getRefreshToken() async =>
       await _storage.read(key: 'refresh_token');
 
+  // REFRESH TOKEN
   Future<bool> _refreshToken() async {
     final refreshToken = await getRefreshToken();
     if (refreshToken == null) return false;
@@ -27,6 +31,7 @@ class ApiService {
     return false;
   }
 
+  // AUTHENTICATED REQUEST HANDLER
   Future<http.Response> _authenticatedRequest(
     Future<http.Response> Function(String token) requestFn,
   ) async {
@@ -95,6 +100,31 @@ class ApiService {
     );
     if (response.statusCode == 200) return true;
     throw HttpException('Profile update failed: ${response.body}');
+  }
+
+  // UPDATE PASSWORD
+  Future<bool> updatePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final response = await _authenticatedRequest(
+      (token) => http.put(
+        Uri.parse('$apiBaseUrl/api/account/update_profile/'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'old_password': oldPassword,
+          'new_password': newPassword,
+        }),
+      ),
+    );
+    if (response.statusCode == 200) return true;
+    final errorData = jsonDecode(response.body);
+    throw HttpException(
+      errorData['error'] ?? 'Password update failed: ${response.body}',
+    );
   }
 
   // PREDICT DISEASE

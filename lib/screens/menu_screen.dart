@@ -101,6 +101,13 @@ class _MenuScreenState extends State<MenuScreen> {
                     },
                   ),
                   ListTile(
+                    leading: const Icon(Icons.settings),
+                    title: const Text('Settings'),
+                    onTap: () {
+                      Navigator.pushNamed(context, '/settings');
+                    },
+                  ),
+                  ListTile(
                     leading: const Icon(Icons.info),
                     title: const Text('About Us'),
                     onTap: () {
