@@ -1,6 +1,6 @@
 # 🌿 Plant Disease Detection App
 
-A **Flutter mobile application** for the [Plant Disease Detection API](https://github.com/pankajrajparajuli/plant-disease-api).  
+A **Flutter mobile application** for the [Plant Disease Detection API](https://github.com/pankajrajparajuli/plantdiseasedetection_-django-backend).  
 It allows users to **register, log in, upload plant images for AI-based disease detection**, and **view/manage their prediction history** — all secured with **JWT authentication**.  
 
 ---
