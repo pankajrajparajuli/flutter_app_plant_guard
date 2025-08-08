@@ -20,7 +20,7 @@ It allows users to **register, log in, upload plant images for AI-based disease 
 
 ## 🔗 API Integration
 
-This app communicates with the **[Plant Disease Detection API](https://github.com/pankajrajparajuli/plant-disease-api)** built using Django REST Framework.
+This app communicates with the **[Plant Disease Detection API](https://github.com/pankajrajparajuli/plantdiseasedetection_-django-backend)** built using Django REST Framework.
 
 | Method | Endpoint                              | Purpose                              |
 |--------|---------------------------------------|--------------------------------------|
@@ -47,7 +47,7 @@ This app communicates with the **[Plant Disease Detection API](https://github.co
 ## 🚀 Getting Started
 
 ### 1. **Clone the repository**
-    git clone https://github.com/your-username/plant-disease-detection-app.git
+    git clone https://github.com/pankajrajparajuli/plant-disease-detection-app.git
     cd plant-disease-detection-app
 
 ### 2. **Install dependencies**
