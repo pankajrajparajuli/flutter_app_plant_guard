@@ -47,8 +47,8 @@ This app communicates with the **[Plant Disease Detection API](https://github.co
 ## 🚀 Getting Started
 
 ### 1. **Clone the repository**
-    git clone https://github.com/pankajrajparajuli/plant-disease-detection-app.git
-    cd plant-disease-detection-app
+    git clone https://github.com/pankajrajparajuli/flutter_app_plant_guard.git
+    cd flutter_app_plant_guard
 
 ### 2. **Install dependencies**
     flutter pub get
